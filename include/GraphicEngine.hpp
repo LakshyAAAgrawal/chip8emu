@@ -6,4 +6,5 @@ private:
 	FrameBuffer fb;
 public:
 	GraphicEngine();
+	void cls();
 };

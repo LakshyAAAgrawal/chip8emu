@@ -3,3 +3,7 @@
 GraphicEngine::GraphicEngine(){
 
 }
+
+void GraphicEngine::cls(){
+	fb.cls();
+}
