@@ -15,10 +15,21 @@ void loadFile(char * filename, std::vector<uint8_t>& prog){
 
 int main(int argc, char ** argv){
 	Machine machine;
+
+	// Load Instructions
 	std::vector<uint8_t> * prog = new std::vector<uint8_t>();
 	loadFile(argv[1], *prog);
 	machine.setInst(*prog, 0x200);
 	delete prog;
+
+	// Load Sprites
+	std::vector<uint8_t> * sprites = new std::vector<uint8_t>();
+	loadFile("../res/sprites.bin", *prog);
+	machine.setInst(*sprites, 0x000);
+	delete sprites;
+
+	// Begin instruction fetch-execute-increment cycle
 	machine.runLoop();
+	
 	return 0;
 }
