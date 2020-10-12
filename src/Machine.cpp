@@ -35,8 +35,8 @@ void Machine::setInst(std::vector<uint8_t>& prog, uint16_t start_addr){
 
 void Machine::execute(uint16_t& opcode){
 	std::map<uint16_t, std::function<void(uint16_t&)>> direct_match{
-		{0x00e0, [this](uint16_t& op){ge.cls();}},
-		{0x00ee, [this](uint16_t& op){PC = stack[--SP]; }}, // TODO
+		{0x00e0, [this](uint16_t& op){ ge.cls();}},
+		{0x00ee, [this](uint16_t& op){ PC = stack[--SP]; }}, // TODO
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_third_fourth_match{
 		{0xe09e, [this](uint16_t& op){ if(kb.isKeyDown(registers[(op & 0x0f00)>>8])) PC += 2; }}, // Ex9E - SKP Vx
@@ -46,7 +46,7 @@ void Machine::execute(uint16_t& opcode){
 		{0xf015, [this](uint16_t& op){ DT = registers[(op & 0x0f00)>>8]; }}, // Fx15 - LD DT, Vx
 		{0xf018, [this](uint16_t& op){ ST = registers[(op & 0x0f00)>>8]; }}, // Fx18 - LD ST, Vx
 		{0xf01e, [this](uint16_t& op){ I += (uint16_t)registers[(op & 0x0f00)>>8]; }}, // Fx1E - ADD I, Vx
-		{0xf029, [this](uint16_t& op){ I = ((uint16_t) registers[(op & 0x0f00)>>8])*5; }}, // Fx29 - LD F, Vx
+		{0xf029, [this](uint16_t& op){ I = ((uint16_t)registers[(op & 0x0f00)>>8])*5; }}, // Fx29 - LD F, Vx
 		{0xf033, [this](uint16_t& op){ // Fx33 - LD B, Vx
 			memory[I] = (registers[(op & 0x0f00)>>8] / 100);
 			memory[I+1] = ((registers[(op & 0x0f00)>>8]%100) / 10);
@@ -101,7 +101,8 @@ void Machine::execute(uint16_t& opcode){
 		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // TODO - Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
 		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
-			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f) + 1, registers[(op & 0x0f00)>>8], registers[(op & 0x00f0)>>4]);
+			// Need to understand why will 1 not be added for second argument
+			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f), registers[(op & 0x0f00)>>8] % 0x40, registers[(op & 0x00f0)>>4] % 0x20);
 		}}
 	};
 
@@ -112,7 +113,10 @@ void Machine::execute(uint16_t& opcode){
 	else if((it = first_match.find(opcode & 0xf000)) != first_match.end()){}
 
 	if(it != first_match.end()) (it->second)(opcode);
-	else std::cout << "No match found for " << std::hex << (int) opcode << "\n";
+	else {
+		std::cout << "No match found for " << std::hex << (int) opcode << "\n";
+		std::exit(0);
+	}
 }
 
 void Machine::update_sound_timer(const std::chrono::steady_clock::time_point& now){
@@ -135,7 +139,7 @@ void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& no
 void Machine::print_machine_state(){
 	std::cout << "DT " << (int)DT << "\t" << "ST " << (int)ST << "\t" << "I " << (int) I << "\n";
 	for(int i = 0; i < 16; ++i){
-		std::cout << "V" << std::hex << i << " " << (int)registers[i] << "  ";
+		std::cout << "V" << std::hex << i << " " ; std::cout << (int)registers[i] << "  ";
 	}
 	std::cout << "\n";
 }
