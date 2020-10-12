@@ -27,6 +27,8 @@ private:
 	uint16_t PC; // Program Counter
 	void execute(uint16_t& opcode);
 	uint8_t random_byte();
+	void update_sound_timer();
+	void update_delay_timer();
 public:
 	Machine();
 	void setInst(std::vector<uint8_t>& prog, uint16_t start_addr);

@@ -1,10 +1,16 @@
 #include <stdint.h>
-#include "FrameBuffer.hpp"
+#include <vector>
+#include <array>
+#include <bitset>
+#include <string>
 
 class GraphicEngine{
 private:
-	FrameBuffer fb;
+	std::array<std::bitset<64>, 32> fb;
+	std::string screen_as_string();
 public:
 	GraphicEngine();
 	void cls();
+	uint8_t draw_sprite(std::vector<uint8_t>::iterator start, std::vector<uint8_t>::iterator end, uint8_t x, uint8_t y);
+	void update_display();
 };

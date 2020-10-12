@@ -39,15 +39,23 @@ void Machine::execute(uint16_t& opcode){
 		{0xf00a, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = kb.waitAndGetKeypress(); }}, // Fx0A - LD Vx, K
 		{0xf015, [this](uint16_t& op){ DT = registers[(op & 0x0f00)>>8]; }}, // Fx15 - LD DT, Vx
 		{0xf018, [this](uint16_t& op){ ST = registers[(op & 0x0f00)>>8]; }}, // Fx18 - LD ST, Vx
-		{0xf01e, [this](uint16_t& op){ I += registers[(op & 0x0f00)>>8]; }}, // Fx1E - ADD I, Vx
-		{0xf029, [this](uint16_t& op){}}, // TODO - Fx29 - LD F, Vx
+		{0xf01e, [this](uint16_t& op){ I += (uint16_t)registers[(op & 0x0f00)>>8]; }}, // Fx1E - ADD I, Vx
+		{0xf029, [this](uint16_t& op){ I = ((uint16_t) registers[(op & 0x0f00)>>8])*5; }}, // Fx29 - LD F, Vx
 		{0xf033, [this](uint16_t& op){ // Fx33 - LD B, Vx
 			memory[I] = (registers[(op & 0x0f00)>>8] / 100);
 			memory[I+1] = ((registers[(op & 0x0f00)>>8]%100) / 10);
 			memory[I+2] = ((registers[(op & 0x0f00)>>8]%10) / 1);
 		}},
-		{0xf055, [this](uint16_t& op){ std::copy(registers.begin(), registers.begin() + ((op & 0x0f00)>>8) + 1, memory.begin() + I); }}, // Fx55 - LD [I], Vx
-		{0xf065, [this](uint16_t& op){ std::copy(memory.begin() + I, memory.begin() + I + ((op & 0x0f00)>>8) + 1, registers.begin()); }} // Fx65 - LD Vx, [I]
+
+		// TODO - Check both the following instructions whether I = I+X+1 http://mattmik.com/files/chip8/mastering/chip8.html
+		{0xf055, [this](uint16_t& op){ // Fx55 - LD [I], Vx
+			std::copy(registers.begin(), registers.begin() + ((op & 0x0f00)>>8) + 1, memory.begin() + I);
+			I += (uint16_t)((op & 0x0f00)>>8) + 1;
+		}},
+		{0xf065, [this](uint16_t& op){ // Fx65 - LD Vx, [I]
+			std::copy(memory.begin() + I, memory.begin() + I + ((op & 0x0f00)>>8) + 1, registers.begin());
+			I += (uint16_t)((op & 0x0f00)>>8) + 1;
+		}}
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_fourth_match{
 		{0x5000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] == registers[(op & 0x00f0)>>4])? 2: 0); }}, // 5xy0 - SE Vx, Vy
@@ -56,7 +64,7 @@ void Machine::execute(uint16_t& opcode){
 		{0x8002, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] & registers[(op & 0x0f00)>>8]; }}, // 8xy2 - AND Vx, Vy
 		{0x8003, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] ^ registers[(op & 0x0f00)>>8]; }}, // 8xy3 - XOR Vx, Vy
 		{0x8004, [this](uint16_t& op){ // 8xy4 - ADD Vx, Vy
-			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] + registers[(op & 0x0f00)>>8];
+			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] + registers[(op & 0x0f00)>>8]; // TEST
 			registers[0xf] = ((0xff - registers[(op & 0x00f0)>>4]) < registers[(op & 0x0f00)>>8])? 1 : 0;
 		}},
 		{0x8005, [this](uint16_t& op){ // 8xy5 - SUB Vx, Vy
@@ -84,9 +92,11 @@ void Machine::execute(uint16_t& opcode){
 		{0x6000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff); }}, // 6xkk - LD Vx, byte
 		{0x7000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] += (op & 0x00ff); }}, // 7xkk - ADD Vx, byte
 		{0xa000, [this](uint16_t& op){ I = (op & 0x0fff); }}, // Annn - LD I, addr
-		{0xb000, [this](uint16_t& op){ PC = registers[0] + (op & 0x0fff); }}, // Bnnn - JP V0, addr
+		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
-		{0xd000, [this](uint16_t& op){}} // TODO - Dxyn - DRW Vx, Vy, nibble
+		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
+			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f) + 1, (op & 0x0f00)>>8, (op & 0x00f0) >> 4);
+		}}
 	};
 
 	auto it = direct_match.find(opcode);
@@ -99,9 +109,28 @@ void Machine::execute(uint16_t& opcode){
 	else std::cout << "No match found for " << std::hex << (int) opcode << "\n";
 }
 
+void Machine::update_sound_timer(){
+	
+}
+
+void Machine::update_delay_timer(){
+
+}
+
 void Machine::runLoop(){
 	while(true){
+		// Update display
+		ge.update_display();
+
+		// Fetch Instruction and execute
 		uint16_t opcode = (memory[PC]<<8) | (memory[PC+1]);
 		execute(opcode);
+
+		// Update timers
+		update_sound_timer();
+		update_delay_timer();
+		
+		// Increment Program Counter;
+		PC += 2;
 	}
 }
