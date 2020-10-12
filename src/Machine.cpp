@@ -3,12 +3,14 @@
 #include <functional>
 #include <map>
 #include <iostream>
+#include <chrono>
 
 Machine::Machine(){
 	registers = std::vector<uint8_t>(16);
 	stack = std::vector<uint8_t>(64);
 	memory = std::vector<uint8_t>(4096);
 	PC = 0x200;
+	last_tick = std::chrono::steady_clock::now();
 }
 
 uint8_t Machine::random_byte(){
@@ -109,26 +111,45 @@ void Machine::execute(uint16_t& opcode){
 	else std::cout << "No match found for " << std::hex << (int) opcode << "\n";
 }
 
-void Machine::update_sound_timer(){
-	
+void Machine::update_sound_timer(const std::chrono::steady_clock::time_point& now){
+	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
+	if(ST > 0 && time_span.count() >= 16){
+		ST -= 1;
+		if(ST == 0){
+			// Disable sound
+		}
+	}
 }
 
-void Machine::update_delay_timer(){
+void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& now){
+	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
+	if(DT > 0 && time_span.count() >= 16){
+		DT -= 1;
+	}
+}
 
+void Machine::print_machine_state(){
+	std::cout << "DT " << (int)DT << "\t" << "ST " << (int)ST << "\n";
+	for(int i = 0; i < 16; ++i){
+		std::cout << "V" << std::hex << i << " " << (int)registers[i] << "  ";
+	}
 }
 
 void Machine::runLoop(){
 	while(true){
 		// Update display
 		ge.update_display();
-
+		print_machine_state();
+		print_machine_state();
+		
 		// Fetch Instruction and execute
 		uint16_t opcode = (memory[PC]<<8) | (memory[PC+1]);
 		execute(opcode);
 
 		// Update timers
-		update_sound_timer();
-		update_delay_timer();
+		auto time_now = std::chrono::steady_clock::now();
+		update_sound_timer(time_now);
+		update_delay_timer(time_now);
 		
 		// Increment Program Counter;
 		PC += 2;

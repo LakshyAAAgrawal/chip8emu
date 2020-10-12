@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-// From https://cplusplus.com/articles/4z18T05o/
+// From https://stackoverflow.com/questions/17335816/clear-screen-using-c
 void ClearScreen(){
 	std::cout << "\033[2J\033[1;1H";
 }
@@ -43,8 +43,8 @@ std::string GraphicEngine::screen_as_string(){
 	}
 	s.append(std::string(66, '#'));
 	s.push_back('\n');
-	std::replace( s.begin(), s.end(), '0', ' ');
-	std::replace( s.begin(), s.end(), '1', '*');
+	std::replace(s.begin(), s.end(), '0', ' ');
+	std::replace(s.begin(), s.end(), '1', '*');
 	return s;
 }
 
