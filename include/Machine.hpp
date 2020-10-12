@@ -1,8 +1,10 @@
 #include <exception>
 #include <stdint.h>
-#include "../include/GraphicEngine.hpp"
 #include <vector>
 #include <random>
+
+#include "../include/GraphicEngine.hpp"
+#include "../include/Keyboard.hpp"
 
 class ProgramLargerThanMemoryException: public std::exception {
   virtual const char* what() const throw()
@@ -21,6 +23,7 @@ private:
 	uint8_t DT; // Delay Timer
 	uint8_t ST; // Sound Timer
 	GraphicEngine ge; // Holds Graphics and frame buffer
+	Keyboard kb; // presents Keyboard related functions
 	uint16_t PC; // Program Counter
 	void execute(uint16_t& opcode);
 	uint8_t random_byte();

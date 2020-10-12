@@ -33,10 +33,10 @@ void Machine::execute(uint16_t& opcode){
 		{0x00ee, [this](uint16_t& op){PC = stack[SP]; SP--;}},
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_third_fourth_match{
-		{0xe09e, [this](uint16_t& op){}}, // TODO - Ex9E - SKP Vx
-		{0xe0a1, [this](uint16_t& op){}}, // TODO - ExA1 - SKNP Vx
+		{0xe09e, [this](uint16_t& op){ if(kb.isKeyDown(registers[(op & 0x0f00)>>8])) PC += 2; }}, // Ex9E - SKP Vx
+		{0xe0a1, [this](uint16_t& op){ if(!kb.isKeyDown(registers[(op & 0x0f00)>>8])) PC += 2; }}, // ExA1 - SKNP Vx
 		{0xf007, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = DT; }}, // Fx07 - LD Vx, DT
-		{0xf00a, [this](uint16_t& op){}}, // TODO - Fx0A - LD Vx, K
+		{0xf00a, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = kb.waitAndGetKeypress(); }}, // Fx0A - LD Vx, K
 		{0xf015, [this](uint16_t& op){ DT = registers[(op & 0x0f00)>>8]; }}, // Fx15 - LD DT, Vx
 		{0xf018, [this](uint16_t& op){ ST = registers[(op & 0x0f00)>>8]; }}, // Fx18 - LD ST, Vx
 		{0xf01e, [this](uint16_t& op){ I += registers[(op & 0x0f00)>>8]; }}, // Fx1E - ADD I, Vx
