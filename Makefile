@@ -1,7 +1,4 @@
 # Makefile and project structure used from - https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/
-#
-# TODO: Move `libmongoclient.a` to /usr/local/lib so this can work on production servers
-#
 CC := g++ # This is the main compiler
 #CC := clang --analyze # and comment out the linker last line for sanity
 SRCDIR := src
