@@ -6,11 +6,15 @@
 #include <chrono>
 
 Machine::Machine(){
-	registers = std::vector<uint8_t>(16);
-	stack = std::vector<uint8_t>(64);
-	memory = std::vector<uint8_t>(4096);
+	registers = std::vector<uint8_t>(16, 0);
+	stack = std::vector<uint8_t>(64, 0);
+	memory = std::vector<uint8_t>(4096, 0);
 	PC = 0x200;
 	last_tick = std::chrono::steady_clock::now();
+	I = 0;
+	SP = 0;
+	DT = 0;
+	ST = 0;
 }
 
 uint8_t Machine::random_byte(){
@@ -32,7 +36,7 @@ void Machine::setInst(std::vector<uint8_t>& prog, uint16_t start_addr){
 void Machine::execute(uint16_t& opcode){
 	std::map<uint16_t, std::function<void(uint16_t&)>> direct_match{
 		{0x00e0, [this](uint16_t& op){ge.cls();}},
-		{0x00ee, [this](uint16_t& op){PC = stack[SP]; SP--;}},
+		{0x00ee, [this](uint16_t& op){PC = stack[--SP]; }}, // TODO
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_third_fourth_match{
 		{0xe09e, [this](uint16_t& op){ if(kb.isKeyDown(registers[(op & 0x0f00)>>8])) PC += 2; }}, // Ex9E - SKP Vx
@@ -52,11 +56,11 @@ void Machine::execute(uint16_t& opcode){
 		// TODO - Check both the following instructions whether I = I+X+1 http://mattmik.com/files/chip8/mastering/chip8.html
 		{0xf055, [this](uint16_t& op){ // Fx55 - LD [I], Vx
 			std::copy(registers.begin(), registers.begin() + ((op & 0x0f00)>>8) + 1, memory.begin() + I);
-			I += (uint16_t)((op & 0x0f00)>>8) + 1;
+			// I += (uint16_t)((op & 0x0f00)>>8) + 1;
 		}},
 		{0xf065, [this](uint16_t& op){ // Fx65 - LD Vx, [I]
 			std::copy(memory.begin() + I, memory.begin() + I + ((op & 0x0f00)>>8) + 1, registers.begin());
-			I += (uint16_t)((op & 0x0f00)>>8) + 1;
+			// I += (uint16_t)((op & 0x0f00)>>8) + 1;
 		}}
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_fourth_match{
@@ -87,17 +91,17 @@ void Machine::execute(uint16_t& opcode){
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_match{
 		{0x0000, [this](uint16_t& op){}}, // To be ignored as per COWGOD
-		{0x1000, [this](uint16_t& op){ PC = (op & 0x0fff); }}, // JP addr
-		{0x2000, [this](uint16_t& op){ SP++; stack[SP] = PC; PC = (op & 0x0fff); }}, // CALL addr
+		{0x1000, [this](uint16_t& op){ PC = (op & 0x0fff); }}, // TODO - JP addr
+		{0x2000, [this](uint16_t& op){ stack[SP++] = PC; PC = (op & 0x0fff); }}, // TODO - CALL addr
 		{0x3000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] == (op & 0x00ff))? 2: 0); }}, // 3xkk - SE Vx, byte
 		{0x4000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] != (op & 0x00ff))? 2: 0); }}, // 4xkk - SNE Vx, byte
 		{0x6000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff); }}, // 6xkk - LD Vx, byte
 		{0x7000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] += (op & 0x00ff); }}, // 7xkk - ADD Vx, byte
 		{0xa000, [this](uint16_t& op){ I = (op & 0x0fff); }}, // Annn - LD I, addr
-		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // Bnnn - JP V0, addr
+		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // TODO - Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
 		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
-			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f) + 1, (op & 0x0f00)>>8, (op & 0x00f0) >> 4);
+			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f) + 1, registers[(op & 0x0f00)>>8], registers[(op & 0x00f0)>>4]);
 		}}
 	};
 
@@ -129,10 +133,11 @@ void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& no
 }
 
 void Machine::print_machine_state(){
-	std::cout << "DT " << (int)DT << "\t" << "ST " << (int)ST << "\n";
+	std::cout << "DT " << (int)DT << "\t" << "ST " << (int)ST << "\t" << "I " << (int) I << "\n";
 	for(int i = 0; i < 16; ++i){
 		std::cout << "V" << std::hex << i << " " << (int)registers[i] << "  ";
 	}
+	std::cout << "\n";
 }
 
 void Machine::runLoop(){
@@ -140,18 +145,19 @@ void Machine::runLoop(){
 		// Update display
 		ge.update_display();
 		print_machine_state();
-		print_machine_state();
+		//print_machine_state();
 		
 		// Fetch Instruction and execute
 		uint16_t opcode = (memory[PC]<<8) | (memory[PC+1]);
+		std::cout << "Opcode " << std::hex << opcode << "\n";
+		PC += 2; // Increment Program Counter;
 		execute(opcode);
 
 		// Update timers
 		auto time_now = std::chrono::steady_clock::now();
 		update_sound_timer(time_now);
 		update_delay_timer(time_now);
-		
-		// Increment Program Counter;
-		PC += 2;
+
+		//std::cin.get();
 	}
 }

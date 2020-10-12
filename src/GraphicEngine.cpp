@@ -9,7 +9,7 @@ void ClearScreen(){
 }
 
 GraphicEngine::GraphicEngine(){
-
+	fb.fill(std::bitset<64>(0));
 }
 
 void GraphicEngine::cls(){
@@ -22,7 +22,7 @@ uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::ve
 	for(uint8_t curr_y = y; start != end; ++start, curr_y = (curr_y + 1)%32){
 		std::bitset<64> sprite_y(*start);
 		std::bitset<64> org = fb[curr_y];
-		sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : ((sprite_y >> (x - 56)) | (sprite_y << x));
+		sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : ((sprite_y >> (x - 56)) | (sprite_y << (120-x)));
 		fb[curr_y] ^= sprite_y;
 		for(int i = 0; i < 8; ++i){
 			if(org[(x+i)%64] && !fb[curr_y][(x+i)%64]) b = true;
@@ -36,15 +36,18 @@ std::string GraphicEngine::screen_as_string(){
 	s.reserve(67*34);
 	s.append(std::string(66, '#'));
 	s.push_back('\n');
-	for(auto y: fb){
+	for(auto& y: fb){
 		s.push_back('#');
-		s.append(y.to_string());
+		for(char c: y.to_string()){
+			if(c == '1') s.append("█");
+			else s.append(" ");
+		} 
 		s.append("#\n");
 	}
 	s.append(std::string(66, '#'));
 	s.push_back('\n');
-	std::replace(s.begin(), s.end(), '0', ' ');
-	std::replace(s.begin(), s.end(), '1', '*');
+	//std::replace(s.begin(), s.end(), '0', ' ');
+	//std::replace(s.begin(), s.end(), '1', 'ș');
 	return s;
 }
 
