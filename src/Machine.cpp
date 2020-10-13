@@ -120,30 +120,16 @@ void Machine::execute(uint16_t& opcode){
 	}
 }
 
-void Machine::update_sound_timer(const std::chrono::steady_clock::time_point& now){
-	if(ST == 0) return;
+void Machine::update_timers(const std::chrono::steady_clock::time_point& now){
 	auto time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
-
 	int to_reduce = time_span.count()/16;
-	if(to_reduce >= ST) ST = 0;
-	else ST = ST - to_reduce;
+	if(to_reduce > 0){
+		last_tick = now - std::chrono::duration<int,std::milli>(time_span.count()%16);
+	}
+	DT = (DT >= to_reduce) ? (DT - to_reduce) : 0;
+	ST = (ST >= to_reduce) ? (ST - to_reduce) : 0;
 
-	if(to_reduce > 0) last_tick = now;
-	//ST--;
-	// TODO - Disable sound
-}
-
-void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& now){
-	if(DT == 0) return;
-    auto time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
-
-	int to_reduce = time_span.count()/16;
-	if(to_reduce >= DT) DT = 0;
-	else DT = DT - to_reduce;
-
-	if(to_reduce > 0) last_tick = now;
-	
-	//DT--;
+	// TODO - Update Sound state
 }
 
 void Machine::print_machine_state(){
@@ -178,8 +164,9 @@ void Machine::runLoop(){
 
 		// Update timers
 		auto time_now = std::chrono::steady_clock::now();
-		update_sound_timer(time_now);
-		update_delay_timer(time_now);
+		// update_sound_timer(time_now);
+		// update_delay_timer(time_now);
+		update_timers(time_now);
 		
 		// std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		// std::cin.get();

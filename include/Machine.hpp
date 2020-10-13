@@ -30,9 +30,8 @@ private:
 	// Methods
 	void execute(uint16_t& opcode);
 	uint8_t random_byte();
-	void update_sound_timer(const std::chrono::steady_clock::time_point& now);
-	void update_delay_timer(const std::chrono::steady_clock::time_point& now);
-	void print_machine_state();
+    void print_machine_state();
+	void update_timers(const std::chrono::steady_clock::time_point& now);
 public:
 	Machine();
 	void setInst(std::vector<uint8_t>& prog, uint16_t start_addr);
