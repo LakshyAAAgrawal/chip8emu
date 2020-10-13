@@ -4,6 +4,7 @@
 #include <map>
 #include <iostream>
 #include <chrono>
+#include <thread>
 
 Machine::Machine(){
 	registers = std::vector<uint8_t>(16, 0);
@@ -121,24 +122,28 @@ void Machine::execute(uint16_t& opcode){
 
 void Machine::update_sound_timer(const std::chrono::steady_clock::time_point& now){
 	if(ST == 0) return;
-	// std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
+	auto time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
 
-	//int to_reduce = time_span.count()/16;
-	//if(to_reduce >= ST) ST = 0;
-	//else ST = ST - to_reduce;
+	int to_reduce = time_span.count()/16;
+	if(to_reduce >= ST) ST = 0;
+	else ST = ST - to_reduce;
 
-	ST--;
+	if(to_reduce > 0) last_tick = now;
+	//ST--;
 	// Disable sound
 }
 
 void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& now){
 	if(DT == 0) return;
-	// std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
+    auto time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
 
-	//int to_reduce = time_span.count()/16;
-	//if(to_reduce >= DT) DT = 0;
-	//else DT = DT - to_reduce;
-	DT--;
+	int to_reduce = time_span.count()/16;
+	if(to_reduce >= DT) DT = 0;
+	else DT = DT - to_reduce;
+
+	if(to_reduce > 0) last_tick = now;
+	
+	//DT--;
 }
 
 void Machine::print_machine_state(){
@@ -160,13 +165,14 @@ void Machine::print_machine_state(){
 void Machine::runLoop(){
 	while(true){
 		// Update display
-		ge.update_display();
-		print_machine_state();
-		//print_machine_state();
+		if(ge.is_dirty()){
+			ge.update_display();
+			print_machine_state();
+		}
+		kb.update_pressed_keys();
 		
 		// Fetch Instruction and execute
 		uint16_t opcode = (memory[PC]<<8) | (memory[PC+1]);
-		std::cout << "Opcode " << std::hex << opcode << "\n";
 		PC += 2; // Increment Program Counter;
 		execute(opcode);
 
@@ -174,7 +180,8 @@ void Machine::runLoop(){
 		auto time_now = std::chrono::steady_clock::now();
 		update_sound_timer(time_now);
 		update_delay_timer(time_now);
-
-		//std::cin.get();
+		
+		// std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		// std::cin.get();
 	}
 }

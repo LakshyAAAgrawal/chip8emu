@@ -9,12 +9,13 @@ void ClearScreen(){
 }
 
 GraphicEngine::GraphicEngine(){
-	fb.fill(std::bitset<64>(0));
+	cls();
 }
 
 void GraphicEngine::cls(){
 	// TODO
 	fb.fill(std::bitset<64>(0));
+	dirty = true;
 }
 
 uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::vector<uint8_t>::iterator end, uint8_t x, uint8_t y){
@@ -29,6 +30,7 @@ uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::ve
 			if(org.test((x+i)%64) && !fb[curr_y].test((x+i)%64)) b = true;
 		} */
 		if((org & (~fb[curr_y])).count() > 0) b = true;
+		if((org ^ fb[curr_y]).count() > 0) dirty = true;
 	}
 	return b?1:0;
 }
@@ -56,4 +58,9 @@ std::string GraphicEngine::screen_as_string(){
 void GraphicEngine::update_display(){
 	ClearScreen();
 	std::cout << screen_as_string();
+	dirty = false;
+}
+
+bool GraphicEngine::is_dirty(){
+	return dirty;
 }
