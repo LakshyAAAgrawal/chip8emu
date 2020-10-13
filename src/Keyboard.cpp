@@ -22,11 +22,20 @@ bool Keyboard::isKeyDown(uint8_t key){
 		{'c', 0xb},
 		{'v', 0xf},
 	};
+	if(kb.kbhit()){
+		int ch = kb.getch();
+		std::cout << (int) ch << " Pressed" << "\n";
+		if(ch == 'l') return false;
+		auto it = key_map.find(ch);
+		if(it != key_map.end() && (it->second == key)){
+			return true;
+		}
+		return false;
+	}
 	return false;
 }
 
 uint8_t Keyboard::waitAndGetKeypress(){
-	// TODO
 	std::map<int, uint8_t> key_map{
 		{'1', 0x1},
 		{'2', 0x2},
@@ -45,5 +54,12 @@ uint8_t Keyboard::waitAndGetKeypress(){
 		{'c', 0xb},
 		{'v', 0xf},
 	};
+	while(true){
+		while(!kb.kbhit()){}
+		int ch = kb.getch();
+		//std::cout << (int) ch << " Pressed" << "\n";
+		auto it = key_map.find(ch);
+		if(it != key_map.end()) return it->second;
+	}
 	return 0;
 }
