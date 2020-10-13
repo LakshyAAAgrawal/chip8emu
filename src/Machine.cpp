@@ -165,7 +165,7 @@ void Machine::runLoop(){
 		}
 
 		// Update the keyboard buffer to check for all pressed keys
-		kb.update_pressed_keys();
+		if(kb.update_pressed_keys()) break; // Return true indicates interrupt received
 		
 		// Fetch Instruction and execute
 		uint16_t opcode = (memory[PC]<<8) | (memory[PC+1]);

@@ -24,16 +24,16 @@ Keyboard::Keyboard(){
 	pressed_keys = std::vector<int>(16, 0);
 }
 
-void Keyboard::update_pressed_keys(){
+bool Keyboard::update_pressed_keys(){
 	if(kb.kbhit()){
 		int ch = kb.getch();
-		if(ch == 'l') exit(0);
+		if(ch == 'l') return true;
 		auto it = key_map.find(ch);
 		if(it != key_map.end()){
 			pressed_keys[it->second] += 1;
 		}
 	}
-	// for(int i = 0; i < 16; ++i) pressed_keys[i] = (pressed_keys[i] > 0) ? pressed_keys[i]-1 : 0;
+	return false;
 }
 
 bool Keyboard::isKeyDown(uint8_t key){

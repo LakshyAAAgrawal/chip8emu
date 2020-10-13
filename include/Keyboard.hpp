@@ -10,7 +10,7 @@ private:
 	std::map<int, uint8_t> key_map;
 public:
 	Keyboard();
-	void update_pressed_keys();
+	bool update_pressed_keys(); // Returns true if there is an interrupt
 	bool isKeyDown(uint8_t key);
 	uint8_t waitAndGetKeypress();
 };
