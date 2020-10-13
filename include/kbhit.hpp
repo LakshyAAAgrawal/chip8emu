@@ -1,3 +1,5 @@
+// From http://linux-sxs.org/programming/kbhit.html
+
 #ifndef KBHITh
 #define KBHITh
 

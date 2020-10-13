@@ -36,8 +36,8 @@ void Machine::setInst(std::vector<uint8_t>& prog, uint16_t start_addr){
 
 void Machine::execute(uint16_t& opcode){
 	std::map<uint16_t, std::function<void(uint16_t&)>> direct_match{
-		{0x00e0, [this](uint16_t& op){ ge.cls();}},
-		{0x00ee, [this](uint16_t& op){ PC = stack[--SP]; }},
+		{0x00e0, [this](uint16_t& op){ ge.cls();}}, // 00e0 - CLS
+		{0x00ee, [this](uint16_t& op){ PC = stack[--SP]; }}, // 00ee - Return
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_third_fourth_match{
 		{0xe09e, [this](uint16_t& op){ if(kb.isKeyDown(registers[(op & 0x0f00)>>8])) PC += 2; }}, // Ex9E - SKP Vx
@@ -102,11 +102,11 @@ void Machine::execute(uint16_t& opcode){
 		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
 		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
-			// Need to understand why will 1 not be added to second argument
 			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f), registers[(op & 0x0f00)>>8] % 0x40, registers[(op & 0x00f0)>>4] % 0x20);
 		}}
 	};
 
+	// Match the opcode and execute it
 	auto it = direct_match.find(opcode);
 	if(it != direct_match.end()){}
 	else if((it = first_third_fourth_match.find(opcode & 0xf0ff)) != first_third_fourth_match.end()){}
@@ -124,6 +124,10 @@ void Machine::update_timers(const std::chrono::steady_clock::time_point& now){
 	auto time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
 	int to_reduce = time_span.count()/16;
 	if(to_reduce > 0){
+		/**
+		 * Suppose the function is called after 18 milliseconds from last_tick, the 2 milliseconds
+		 * will not be account for, hence reduce that much time from "now"
+		 */
 		last_tick = now - std::chrono::duration<int,std::milli>(time_span.count()%16);
 	}
 	DT = (DT >= to_reduce) ? (DT - to_reduce) : 0;
@@ -141,20 +145,26 @@ void Machine::print_machine_state(){
 	for(int i = 0; i < 64; ++i){
 		std::cout << (int)stack[i] << " ";
 	}
-	/* std::cout << "\nMemory: ";
-	for(int i = 0; i < 4096; ++i){
-		std::cout << (int)memory[i] << " ";
-		} */
+
+	// Uncomment to display the entire memory
+	/* 
+	   std::cout << "\nMemory: ";
+	   for(int i = 0; i < 4096; ++i){
+	       std::cout << (int)memory[i] << " ";
+	   } 
+	*/
 	std::cout << "\n";
 }
 
 void Machine::runLoop(){
 	while(true){
 		// Update display
-		if(ge.is_dirty()){
+		if(ge.is_dirty()){ // Check if the screen has to be updated
 			ge.update_display();
 			print_machine_state();
 		}
+
+		// Update the keyboard buffer to check for all pressed keys
 		kb.update_pressed_keys();
 		
 		// Fetch Instruction and execute

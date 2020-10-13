@@ -23,15 +23,17 @@ uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::ve
 	for(uint8_t curr_y = y; curr_y <= 0x1f && start != end; ++start, ++curr_y){
 		std::bitset<64> sprite_y(*start);
 		std::bitset<64> org = fb[curr_y];
+
+		// Uncomment the following line to wrap the sprite around the screen instead of cliiping it
 		// sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : ((sprite_y >> (x - 56)) | (sprite_y << (120-x)));
 		sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : (sprite_y >> (x - 56));
 		fb[curr_y] ^= sprite_y;
-		/* for(int i = 0; x+i <= 0x3f && i < 8; ++i){
-			if(org.test((x+i)%64) && !fb[curr_y].test((x+i)%64)) b = true;
-		} */
+
+		// Update display related flags
 		if((org & (~fb[curr_y])).count() > 0) b = true;
 		if((org ^ fb[curr_y]).count() > 0) dirty = true;
 	}
+	
 	return b?1:0;
 }
 
