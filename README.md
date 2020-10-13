@@ -50,7 +50,7 @@ The left-most 4x4 keys of the QWERTY keyboard("1234", "qwer", "asdf", "zxcv") ar
 | E | 'f' |
 | F | 'v' |
 
-Pressing 'l'(small 'L') during execution will cause a system interrupt and halt the emulator.
+Pressing 'l'(small 'L') during execution will cause a system interrupt and halt the emulator(exit).
 
 ## Assumptions and compatibility
 The emulator currently supports Chip-8 only and not any of the extension sets like SCHIP-48, XO-CHIP.
@@ -72,7 +72,7 @@ Many ROMs were gotten from [Revival Studios](http://www.revival-studios.com/othe
 
 ## Specification and References
 Mainly:
-1. [http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#7xkk](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#7xkk)
+1. [http://devernay.free.fr/hacks/chip8/C8TECH10.HTM](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
 2. [http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
 3. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
 
