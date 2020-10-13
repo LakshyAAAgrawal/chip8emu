@@ -175,6 +175,6 @@ void Machine::runLoop(){
 		// Update timers
 		update_timers(std::chrono::steady_clock::now());
 		
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
