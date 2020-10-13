@@ -65,7 +65,8 @@ Many ROMs were gotten from [Revival Studios](http://www.revival-studios.com/othe
 
 ## Specification and References
 Mainly:
-1. [http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
-2. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
+1. [http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#7xkk](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#7xkk)
+2. [http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
+3. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
 
 And a lot of other sources mentioned as comments in the source code at relevant places
