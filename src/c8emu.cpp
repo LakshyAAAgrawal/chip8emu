@@ -17,18 +17,19 @@ void loadFile(const std::string& filename, std::vector<uint8_t>& prog){
 int main(int argc, char ** argv){
 	Machine machine;
 
-	// Load Instructions
-	std::vector<uint8_t> * prog = new std::vector<uint8_t>();
-	loadFile(argv[1], *prog);
-	machine.setInst(*prog, 0x200);
-	delete prog;
+	{ // Create block to deallocate the possibly large variable prog
+		// Load Instructions
+		std::vector<uint8_t> prog;
+		loadFile(argv[1], prog);
+		machine.setInst(prog, 0x200);
 
-	// Load Sprites
-	std::vector<uint8_t> * sprites = new std::vector<uint8_t>();
-	loadFile("res/sprites.bin", *sprites);
-	machine.setInst(*sprites, 0x000);
-	delete sprites;
+		prog.clear();
 
+		// Load Sprites
+		loadFile("res/sprites.bin", prog);
+		machine.setInst(prog, 0x000);
+	}
+	
 	// Begin instruction fetch-execute-increment cycle
 	machine.runLoop();
 	
