@@ -2,9 +2,12 @@
 This is a terminal based Chip-8 Emulator written in C++. The code has been written modularly to ease different implementations of specifics like Graphics(Terminal based, ncurses based, SDL based, etc) and Input(Touch based, Keyboard based, etc) and enable embedding of the emulator core in other systems.
 
 ## What is CHIP-8
-CHIP-8 is an interpreted programming language from the mid 1970s. Chip 8 programs run on a Chip 8 virtual machine. It was made to ease the programmability of COSMAC VIP and Telmac 1800 microcomputers. Wikipedia has a very nicely written article on the topic [here](https://en.wikipedia.org/wiki/CHIP-8) for further detail.
+CHIP-8 is an interpreted programming language from the mid 1970s. Chip 8 programs run on a Chip 8 virtual machine(Similar to how Java Bytecode runs on a JVM, but in a much much more simplified manner). It was made to ease the programmability of COSMAC VIP and Telmac 1800 microcomputers. Wikipedia has a very nicely written article on [CHIP 8](https://en.wikipedia.org/wiki/CHIP-8) for further detail.
 
-## How does it look
+## What is an emulator
+A good and easy to understand discussion on the topic is available at [Stack Overflow](https://stackoverflow.com/questions/448673/how-do-emulators-work-and-how-are-they-written).
+
+## How does chip8emu look
 The image below displays screenshots of different programs(present in the [roms](/roms) directory) running on the emulator. The emulator consists of a 64x32 display demarcated by "#" borders and displays the internal machine state below(First line displays timers and special registers and second line displays the general purpose registers).
 ![Screenshot 1](/res/Screenshots/animation.gif)
 
