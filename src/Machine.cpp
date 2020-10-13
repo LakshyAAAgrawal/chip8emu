@@ -120,20 +120,25 @@ void Machine::execute(uint16_t& opcode){
 }
 
 void Machine::update_sound_timer(const std::chrono::steady_clock::time_point& now){
-	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
-	if(ST > 0 && time_span.count() >= 16){
-		ST -= 1;
-		if(ST == 0){
-			// Disable sound
-		}
-	}
+	if(ST == 0) return;
+	// std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
+
+	//int to_reduce = time_span.count()/16;
+	//if(to_reduce >= ST) ST = 0;
+	//else ST = ST - to_reduce;
+
+	ST--;
+	// Disable sound
 }
 
 void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& now){
-	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
-	if(DT > 0 && time_span.count() >= 16){
-		DT -= 1;
-	}
+	if(DT == 0) return;
+	// std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(now - last_tick);
+
+	//int to_reduce = time_span.count()/16;
+	//if(to_reduce >= DT) DT = 0;
+	//else DT = DT - to_reduce;
+	DT--;
 }
 
 void Machine::print_machine_state(){
@@ -145,6 +150,10 @@ void Machine::print_machine_state(){
 	for(int i = 0; i < 64; ++i){
 		std::cout << (int)stack[i] << " ";
 	}
+	/* std::cout << "\nMemory: ";
+	for(int i = 0; i < 4096; ++i){
+		std::cout << (int)memory[i] << " ";
+		} */
 	std::cout << "\n";
 }
 

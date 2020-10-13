@@ -25,7 +25,7 @@ int main(int argc, char ** argv){
 
 	// Load Sprites
 	std::vector<uint8_t> * sprites = new std::vector<uint8_t>();
-	loadFile("../res/sprites.bin", *prog);
+	loadFile("res/sprites.bin", *sprites);
 	machine.setInst(*sprites, 0x000);
 	delete sprites;
 

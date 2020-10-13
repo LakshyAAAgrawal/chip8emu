@@ -25,8 +25,9 @@ bool Keyboard::isKeyDown(uint8_t key){
 	if(kb.kbhit()){
 		int ch = kb.getch();
 		std::cout << (int) ch << " Pressed" << "\n";
-		if(ch == 'l') return false;
+		if(ch == 'l') exit(0);
 		auto it = key_map.find(ch);
+		while(kb.kbhit()) kb.getch();
 		if(it != key_map.end() && (it->second == key)){
 			return true;
 		}
@@ -57,9 +58,13 @@ uint8_t Keyboard::waitAndGetKeypress(){
 	while(true){
 		while(!kb.kbhit()){}
 		int ch = kb.getch();
-		//std::cout << (int) ch << " Pressed" << "\n";
+		std::cout << (int) ch << " Pressed" << "\n";
+		if(ch == 'l') exit(0);
 		auto it = key_map.find(ch);
-		if(it != key_map.end()) return it->second;
+		if(it != key_map.end()){
+			while(kb.kbhit()) kb.getch();
+			return it->second;
+		}
 	}
 	return 0;
 }
