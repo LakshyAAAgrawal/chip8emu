@@ -159,16 +159,12 @@ void Machine::runLoop(){
 		
 		// Fetch Instruction and execute
 		uint16_t opcode = (memory[PC]<<8) | (memory[PC+1]);
-		PC += 2; // Increment Program Counter;
+		PC += 2; // Increment Program Counter
 		execute(opcode);
 
 		// Update timers
-		auto time_now = std::chrono::steady_clock::now();
-		// update_sound_timer(time_now);
-		// update_delay_timer(time_now);
-		update_timers(time_now);
+		update_timers(std::chrono::steady_clock::now());
 		
-		// std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		// std::cin.get();
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 }
