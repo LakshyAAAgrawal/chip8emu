@@ -37,7 +37,7 @@ void Machine::setInst(std::vector<uint8_t>& prog, uint16_t start_addr){
 void Machine::execute(uint16_t& opcode){
 	std::map<uint16_t, std::function<void(uint16_t&)>> direct_match{
 		{0x00e0, [this](uint16_t& op){ ge.cls();}},
-		{0x00ee, [this](uint16_t& op){ PC = stack[--SP]; }}, // TODO
+		{0x00ee, [this](uint16_t& op){ PC = stack[--SP]; }},
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_third_fourth_match{
 		{0xe09e, [this](uint16_t& op){ if(kb.isKeyDown(registers[(op & 0x0f00)>>8])) PC += 2; }}, // Ex9E - SKP Vx
@@ -92,14 +92,14 @@ void Machine::execute(uint16_t& opcode){
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_match{
 		{0x0000, [this](uint16_t& op){}}, // To be ignored as per COWGOD
-		{0x1000, [this](uint16_t& op){ PC = (op & 0x0fff); }}, // TODO - JP addr
-		{0x2000, [this](uint16_t& op){ stack[SP++] = PC; PC = (op & 0x0fff); }}, // TODO - CALL addr
+		{0x1000, [this](uint16_t& op){ PC = (op & 0x0fff); }}, // JP addr
+		{0x2000, [this](uint16_t& op){ stack[SP++] = PC; PC = (op & 0x0fff); }}, // CALL addr
 		{0x3000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] == (op & 0x00ff))? 2: 0); }}, // 3xkk - SE Vx, byte
 		{0x4000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] != (op & 0x00ff))? 2: 0); }}, // 4xkk - SNE Vx, byte
 		{0x6000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff); }}, // 6xkk - LD Vx, byte
 		{0x7000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] += (op & 0x00ff); }}, // 7xkk - ADD Vx, byte
 		{0xa000, [this](uint16_t& op){ I = (op & 0x0fff); }}, // Annn - LD I, addr
-		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // TODO - Bnnn - JP V0, addr
+		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
 		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
 			// Need to understand why will 1 not be added to second argument

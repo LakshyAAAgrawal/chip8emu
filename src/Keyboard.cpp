@@ -15,7 +15,7 @@ Keyboard::Keyboard(){
 		{'a', 0x7},
 		{'s', 0x8},
 		{'d', 0x9},
-		{'d', 0xe},
+		{'f', 0xe},
 		{'z', 0xa},
 		{'x', 0x0},
 		{'c', 0xb},
