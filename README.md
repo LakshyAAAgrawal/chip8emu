@@ -21,7 +21,7 @@ make
 ```
 To run, execute:
 ```
-./bin/c8emu path/to/rom
+./bin/c8emu path/to/rom.ch8
 ```
 For example, to run the Tic-Tac-Toe program from the ```roms``` directory, execute:
 ```
