@@ -37,7 +37,7 @@ The following are the key maps:
 
 Pressing 'l' during execution will halt the emulator.
 
-## Support
+## Assumptions and compatibility
 The emulator currently supports Chip-8 only and not any of the extension sets like SCHIP-48, XO-CHIP.
 The following assumptions are made:
 1. ```fx55``` and ```fx65``` do not affect the value of I.
@@ -45,3 +45,17 @@ The following assumptions are made:
 
 ## Contributing and Bug Reports
 You are welcome to submit bug reports as issues and to create pull requests to solve any existing issue.
+
+## Customization
+Currently, only one customization is allowed. The Chip-8 systems provides programs with an in-system font set consisting of Hex-digits(0-F). The sprites for the same are loaded from [res/sprites.bin](res/sprites.bin). The user could provide a custom sprite map and load into the emulator by simply changing the file content.
+
+## ROM Credits
+ROMs were taken from [https://github.com/dmatlack/chip8](https://github.com/dmatlack/chip8)
+
+## Specification and References
+Mainly:
+1. [http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
+2. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
+3. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
+
+And a lot of other sources mentioned as comments in the source code at relevant places
