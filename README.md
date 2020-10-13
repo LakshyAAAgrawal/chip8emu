@@ -2,6 +2,9 @@
 This is a completely terminal based Chip-8 Emulator written in C++. The code has been written modularly to ease different implementations of specifics like Graphics(Terminal based, ncurses based, SDL based, etc) and Input(Touch based, Keyboard based, etc) and enable embedding of the emulator core in other systems.
 ![Screenshot 1](/res/Screenshots/animation.gif)
 
+## What is CHIP-8
+Wikipedia has a very nicely written article on the topic [here](https://en.wikipedia.org/wiki/CHIP-8)
+
 ## How to run
 Clone the repository and make:
 ```
