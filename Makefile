@@ -3,6 +3,7 @@ CC := g++ # This is the main compiler
 #CC := clang --analyze # and comment out the linker last line for sanity
 SRCDIR := src
 BUILDDIR := build
+TARGETDIR := bin
 TARGET := bin/c8emu
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
@@ -12,6 +13,7 @@ LIB := -lncurses  #-pthread -lmongoclient -L lib -lboost_thread-mt -lboost_files
 INC := -I include
 
 $(TARGET): $(OBJECTS)
+	@mkdir -p $(TARGETDIR)
 	@echo " Linking..."
 	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
 

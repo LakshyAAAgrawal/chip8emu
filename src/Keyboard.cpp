@@ -22,16 +22,18 @@ bool Keyboard::isKeyDown(uint8_t key){
 		{'c', 0xb},
 		{'v', 0xf},
 	};
-	if(kb.kbhit()){
+	while(kb.kbhit()){
 		int ch = kb.getch();
-		std::cout << (int) ch << " Pressed" << "\n";
-		if(ch == 'l') exit(0);
+		// std::cout << (int) ch << " Pressed" << "\n";
+		if(ch == 'l'){
+			std::exit(0);
+		}
 		auto it = key_map.find(ch);
-		while(kb.kbhit()) kb.getch();
+		//while(kb.kbhit()) kb.getch();
 		if(it != key_map.end() && (it->second == key)){
 			return true;
 		}
-		return false;
+		//return false;
 	}
 	return false;
 }
@@ -56,14 +58,17 @@ uint8_t Keyboard::waitAndGetKeypress(){
 		{'v', 0xf},
 	};
 	while(true){
-		while(!kb.kbhit()){}
-		int ch = kb.getch();
-		std::cout << (int) ch << " Pressed" << "\n";
-		if(ch == 'l') exit(0);
-		auto it = key_map.find(ch);
-		if(it != key_map.end()){
-			while(kb.kbhit()) kb.getch();
-			return it->second;
+		while(kb.kbhit()){
+			int ch = kb.getch();
+			// std::cout << (int) ch << " Pressed" << "\n";
+			if(ch == 'l'){
+				std::exit(0);
+			}
+			auto it = key_map.find(ch);
+			if(it != key_map.end()){
+				while(kb.kbhit()) kb.getch();
+				return it->second;
+			}
 		}
 	}
 	return 0;

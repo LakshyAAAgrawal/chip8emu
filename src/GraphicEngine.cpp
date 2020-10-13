@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
-#include <ncurses.h>
 
 // From https://stackoverflow.com/questions/17335816/clear-screen-using-c
 void ClearScreen(){
@@ -10,7 +9,6 @@ void ClearScreen(){
 }
 
 GraphicEngine::GraphicEngine(){
-	//initscr();
 	fb.fill(std::bitset<64>(0));
 }
 
@@ -27,9 +25,10 @@ uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::ve
 		// sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : ((sprite_y >> (x - 56)) | (sprite_y << (120-x)));
 		sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : (sprite_y >> (x - 56));
 		fb[curr_y] ^= sprite_y;
-		for(int i = 0; x+i <= 0x3f && i < 8; ++i){
-			if(org[(x+i)%64] && !fb[curr_y][(x+i)%64]) b = true;
-		}
+		/* for(int i = 0; x+i <= 0x3f && i < 8; ++i){
+			if(org.test((x+i)%64) && !fb[curr_y].test((x+i)%64)) b = true;
+		} */
+		if((org & (~fb[curr_y])).count() > 0) b = true;
 	}
 	return b?1:0;
 }
