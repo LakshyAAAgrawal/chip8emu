@@ -60,6 +60,7 @@ Currently, only one customization is allowed. The Chip-8 systems provides progra
 
 ## ROM Credits
 ROMs were taken from [https://github.com/dmatlack/chip8](https://github.com/dmatlack/chip8)
+Many of the ROMs were gotten from [Revival Studios](http://www.revival-studios.com/other.php)
 
 ## Specification and References
 Mainly:
