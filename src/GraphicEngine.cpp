@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include <ncurses.h>
 
 // From https://stackoverflow.com/questions/17335816/clear-screen-using-c
 void ClearScreen(){
@@ -9,6 +10,7 @@ void ClearScreen(){
 }
 
 GraphicEngine::GraphicEngine(){
+	//initscr();
 	fb.fill(std::bitset<64>(0));
 }
 

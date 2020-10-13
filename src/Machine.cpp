@@ -7,7 +7,7 @@
 
 Machine::Machine(){
 	registers = std::vector<uint8_t>(16, 0);
-	stack = std::vector<uint8_t>(64, 0);
+	stack = std::vector<uint16_t>(32, 0);
 	memory = std::vector<uint8_t>(4096, 0);
 	PC = 0x200;
 	last_tick = std::chrono::steady_clock::now();
@@ -101,7 +101,7 @@ void Machine::execute(uint16_t& opcode){
 		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // TODO - Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
 		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
-			// Need to understand why will 1 not be added for second argument
+			// Need to understand why will 1 not be added to second argument
 			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f), registers[(op & 0x0f00)>>8] % 0x40, registers[(op & 0x00f0)>>4] % 0x20);
 		}}
 	};
@@ -137,9 +137,13 @@ void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& no
 }
 
 void Machine::print_machine_state(){
-	std::cout << "DT " << (int)DT << "\t" << "ST " << (int)ST << "\t" << "I " << (int) I << "\n";
+	std::cout << "DT " << (int)DT << "\t" << "ST " << (int)ST << "\t" << "I " << (int) I << "\t" << "SP " << (int) SP << "\t" << "PC " << (int) PC<< "\n";
 	for(int i = 0; i < 16; ++i){
 		std::cout << "V" << std::hex << i << " " ; std::cout << (int)registers[i] << "  ";
+	}
+	std::cout << "\nStack: ";
+	for(int i = 0; i < 64; ++i){
+		std::cout << (int)stack[i] << " ";
 	}
 	std::cout << "\n";
 }

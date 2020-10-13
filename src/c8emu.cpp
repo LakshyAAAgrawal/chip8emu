@@ -4,8 +4,9 @@
 #include <vector>
 #include <fstream>
 #include <iterator>
+#include <string>
 
-void loadFile(char * filename, std::vector<uint8_t>& prog){
+void loadFile(const std::string& filename, std::vector<uint8_t>& prog){
 	// From https://stackoverflow.com/questions/5420317/reading-and-writing-binary-file
 	std::ifstream input(filename, std::ios::binary);
 	for(char c: std::vector<char>(std::istreambuf_iterator<char>(input), {})){

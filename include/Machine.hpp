@@ -18,7 +18,7 @@ private:
 	std::vector<uint8_t> registers; // V0-VF
 	std::vector<uint8_t> memory; // Memory
 	uint16_t I; // Index register
-	std::vector<uint8_t> stack; // Stack
+	std::vector<uint16_t> stack; // Stack
 	uint8_t SP; // Stack Pointer
 	uint8_t DT; // Delay Timer
 	uint8_t ST; // Sound Timer
