@@ -50,7 +50,7 @@ The left-most 4x4 keys of the QWERTY keyboard("1234", "qwer", "asdf", "zxcv") ar
 | E | 'f' |
 | F | 'v' |
 
-Pressing 'l' during execution will halt the emulator.
+Pressing 'l'(small 'L') during execution will cause a system interrupt and halt the emulator.
 
 ## Assumptions and compatibility
 The emulator currently supports Chip-8 only and not any of the extension sets like SCHIP-48, XO-CHIP.
