@@ -1,5 +1,5 @@
 # Chip-8 Emulator
-This is a completely terminal based Chip-8 Emulator written in C++.
+This is a completely terminal based Chip-8 Emulator written in C++. The code has been written modularly to ease different implementations of specifics like Graphics(Terminal based, ncurses based, SDL based, etc) and Input(Touch based, Keyboard based, etc) and enable embedding of the emulator core in other systems.
 ![Screenshot 1](/res/Screenshots/animation.gif)
 
 ## How to run
@@ -13,9 +13,13 @@ To run, execute:
 ```
 ./bin/c8emu path/to/rom
 ```
+For example, to run the Tic-Tac-Toe program from the ```roms``` directory, execute:
+```
+./bin/c8emu roms/games/Tic-Tac-Toe\ \[David\ Winter\].ch8
+```
 
-## How to exit
-The following are the key maps:
+## Input to the emulator
+The left-most 4x4 keys of the QWERTY keyboard("1234", "qwer", "asdf", "zxcv") are used for input as follows:
 
 | Chip 8 Key       | Keyboard     |
 | :------------- | :----------: |
@@ -41,8 +45,9 @@ Pressing 'l' during execution will halt the emulator.
 ## Assumptions and compatibility
 The emulator currently supports Chip-8 only and not any of the extension sets like SCHIP-48, XO-CHIP.
 The following assumptions are made:
-1. ```fx55``` and ```fx65``` do not affect the value of I.
-2. ```Dxyn``` instruction clips the sprite if it goes beyond the screen in either horizontal or vertical direction.
+1. Instructions ```fx55``` and ```fx65``` do not affect the value of I.
+2. Instruction ```Dxyn``` clips the sprite if it goes beyond the screen in either horizontal or vertical direction.
+3. Instructions ```8xyE``` and ```8xy6``` leave Vy unaffected and modify Vx in-place.
 
 ## Contributing and Bug Reports
 You are welcome to submit bug reports as issues and to create pull requests to solve any existing issue.
