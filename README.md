@@ -60,12 +60,12 @@ Currently, only one customization is allowed. The Chip-8 systems provides progra
 
 ## ROM Credits
 ROMs were taken from [https://github.com/dmatlack/chip8](https://github.com/dmatlack/chip8)
-Many of the ROMs were gotten from [Revival Studios](http://www.revival-studios.com/other.php)
+
+Many ROMs were gotten from [Revival Studios](http://www.revival-studios.com/other.php)
 
 ## Specification and References
 Mainly:
 1. [http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf](http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf)
 2. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
-3. [http://mattmik.com/files/chip8/mastering/chip8.html](http://mattmik.com/files/chip8/mastering/chip8.html)
 
 And a lot of other sources mentioned as comments in the source code at relevant places
