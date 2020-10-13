@@ -130,7 +130,7 @@ void Machine::update_sound_timer(const std::chrono::steady_clock::time_point& no
 
 	if(to_reduce > 0) last_tick = now;
 	//ST--;
-	// Disable sound
+	// TODO - Disable sound
 }
 
 void Machine::update_delay_timer(const std::chrono::steady_clock::time_point& now){
