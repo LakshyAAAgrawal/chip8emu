@@ -1,5 +1,6 @@
 # Chip-8 Emulator
 This is a completely terminal based Chip-8 Emulator written in C++.
+![Screenshot 1](/res/Screenshots/animation.gif)
 
 ## How to run
 Clone the repository and make:
@@ -47,7 +48,7 @@ The following assumptions are made:
 You are welcome to submit bug reports as issues and to create pull requests to solve any existing issue.
 
 ## Customization
-Currently, only one customization is allowed. The Chip-8 systems provides programs with an in-system font set consisting of Hex-digits(0-F). The sprites for the same are loaded from [res/sprites.bin](res/sprites.bin). The user could provide a custom sprite map and load into the emulator by simply changing the file content.
+Currently, only one customization is allowed. The Chip-8 systems provides programs with an in-system font set consisting of Hex-digits(0-F). The sprites for the same are loaded from [res/sprites.bin](/res/sprites.bin). The user could provide a custom sprite map and load into the emulator by simply changing the file content.
 
 ## ROM Credits
 ROMs were taken from [https://github.com/dmatlack/chip8](https://github.com/dmatlack/chip8)
