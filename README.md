@@ -1,6 +1,6 @@
 ![Screenshot 1](/res/Screenshots/animation2.gif)
 
-*Emulator displaying the CHIP-8 logo, drawing Serpienski Triangle and Playing Tetris*
+*Emulator displaying the CHIP-8 logo, drawing Sierpinski Triangle and Playing Tetris*
 
 # Chip-8 Emulator
 This is a terminal based Chip-8 Emulator written in C++. ```chip8emu``` can be used to run any CHIP-8 program written for the original specification.
@@ -67,6 +67,20 @@ You are welcome to submit bug reports as issues and to create pull requests to s
 
 ## Customization
 Currently, only one customization is allowed. The Chip-8 systems provides programs with an in-system font set consisting of Hex-digits(0-F). The sprites for the same are loaded from [res/sprites.bin](/res/sprites.bin). The user could provide a custom sprite map and load into the emulator by simply changing the file content.
+
+## Confirmed Working ROMs
+These are the ROMs I have already tested and verified working on ```chip8emu```. Many others should be supported as well. Also checkout [Octojam](https://itch.io/jam/octojam-7) for more recent ROMs.
+- roms/demos/Maze (alt) [David Winter, 199x].ch8
+- roms/demos/Sierpinski [Sergey Naydenov, 2010].ch8
+- roms/demos/Trip8 Demo (2008) [Revival Studios].ch8
+- roms/demos/Zero Demo [zeroZshadow, 2007].ch8
+- roms/games/Cave.ch8
+- roms/games/Figures.ch8
+- roms/games/Pong (alt).ch8
+- roms/games/Soccer.ch8
+- roms/games/Space Invaders [David Winter] (alt).ch8
+- roms/games/Tic-Tac-Toe [David Winter].ch8
+- roms/games/Tetris [Fran Dachille, 1991].ch8
 
 ## ROM Credits
 ROMs were taken from [https://github.com/dmatlack/chip8](https://github.com/dmatlack/chip8)
