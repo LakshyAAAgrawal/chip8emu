@@ -116,7 +116,7 @@ void Machine::execute(uint16_t& opcode){
 	if(it != first_match.end()) (it->second)(opcode);
 	else {
 		std::cout << "No match found for opcode " << std::hex << (int) opcode << "\n";
-		std::cout << "This could be because this ROM uses SCHIP or another extension which is not yet supported.\n"
+		std::cout << "This could be because this ROM uses SCHIP or another extension which is not yet supported.\n";
 		std::exit(0);
 	}
 }
