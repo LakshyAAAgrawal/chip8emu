@@ -39,21 +39,36 @@ uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::ve
 
 std::string GraphicEngine::screen_as_string(){
 	std::string s;
-	s.reserve(67*34);
-	s.append(std::string(66, '#'));
-	s.push_back('\n');
-	for(auto& y: fb){
-		s.push_back('#');
-		for(char c: y.to_string()){
-			if(c == '1') s.append("█");
-			else s.append(" ");
-		} 
-		s.append("#\n");
+	s.append("╔");
+	for(int i = 0; i < 64; ++i){
+		s.append("═");
 	}
-	s.append(std::string(66, '#'));
+	s.append("╗");
 	s.push_back('\n');
-	//std::replace(s.begin(), s.end(), '0', ' ');
-	//std::replace(s.begin(), s.end(), '1', 'ș');
+	for(int i = 0; i < 16; ++i){
+		s.append("║");
+		for(int j = 63; j >= 0; --j){ // bitset indexes are right-to-left
+			if(fb[2*i].test(j)){
+				if(fb[2*i + 1].test(j)){
+					s.append("█");
+				}else{
+					s.append("▀");
+				}
+			}else{
+				if(fb[2*i + 1].test(j)){
+					s.append("▄");
+				}else{
+					s.append(" ");
+				}
+			}
+		}
+		s.append("║\n");
+	}
+	s.append("╚");
+	for(int i = 0; i < 64; ++i){
+		s.append("═");
+	}
+	s.append("╝\n");
 	return s;
 }
 
