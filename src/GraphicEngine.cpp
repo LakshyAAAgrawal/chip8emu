@@ -24,10 +24,10 @@ uint8_t GraphicEngine::draw_sprite(std::vector<uint8_t>::iterator start, std::ve
 		std::bitset<64> sprite_y(*start);
 		std::bitset<64> org = fb[curr_y];
 
-		// Uncomment the following line to wrap the sprite around the screen instead of cliiping it
+		// Uncomment the following line to wrap the sprite around the screen instead of clipping it
 		// sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : ((sprite_y >> (x - 56)) | (sprite_y << (120-x)));
 		sprite_y = (x <= 56) ? (sprite_y << (56 - x)) : (sprite_y >> (x - 56));
-		fb[curr_y] ^= sprite_y;
+		fb[curr_y] = fb[curr_y] ^ sprite_y;
 
 		// Update display related flags
 		if((org & (~fb[curr_y])).count() > 0) b = true;

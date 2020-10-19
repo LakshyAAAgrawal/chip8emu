@@ -36,7 +36,7 @@ void Machine::setInst(std::vector<uint8_t>& prog, uint16_t start_addr){
 
 void Machine::execute(uint16_t& opcode){
 	std::map<uint16_t, std::function<void(uint16_t&)>> direct_match{
-		{0x00e0, [this](uint16_t& op){ ge.cls();}}, // 00e0 - CLS
+		{0x00e0, [this](uint16_t& op){ ge.cls(); }}, // 00e0 - CLS
 		{0x00ee, [this](uint16_t& op){ PC = stack[--SP]; }}, // 00ee - Return
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_third_fourth_match{
@@ -55,38 +55,45 @@ void Machine::execute(uint16_t& opcode){
 		}},
 
 		// TODO - Check both the following instructions whether I = I+X+1 http://mattmik.com/files/chip8/mastering/chip8.html
+		// Change the value of I, as per mattmik
 		{0xf055, [this](uint16_t& op){ // Fx55 - LD [I], Vx
 			std::copy(registers.begin(), registers.begin() + ((op & 0x0f00)>>8) + 1, memory.begin() + I);
-			// I += (uint16_t)((op & 0x0f00)>>8) + 1;
+			I += ((uint16_t)((op & 0x0f00)>>8)) + 1;
 		}},
 		{0xf065, [this](uint16_t& op){ // Fx65 - LD Vx, [I]
 			std::copy(memory.begin() + I, memory.begin() + I + ((op & 0x0f00)>>8) + 1, registers.begin());
-			// I += (uint16_t)((op & 0x0f00)>>8) + 1;
+			I += ((uint16_t)((op & 0x0f00)>>8)) + 1;
 		}}
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_fourth_match{
 		{0x5000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] == registers[(op & 0x00f0)>>4])? 2: 0); }}, // 5xy0 - SE Vx, Vy
-		{0x8000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4]; }}, // 8xy0 - LD Vx, Vy
+		{0x8000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4]; }}, // 8xy0 - LD Vx, Vy Verified
 		{0x8001, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] | registers[(op & 0x0f00)>>8]; }}, // 8xy1 - OR Vx, Vy
 		{0x8002, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] & registers[(op & 0x0f00)>>8]; }}, // 8xy2 - AND Vx, Vy
 		{0x8003, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] ^ registers[(op & 0x0f00)>>8]; }}, // 8xy3 - XOR Vx, Vy
 		{0x8004, [this](uint16_t& op){ // 8xy4 - ADD Vx, Vy
-			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] + registers[(op & 0x0f00)>>8]; // TEST
+			// Verified from mattmik
 			registers[0xf] = ((0xff - registers[(op & 0x00f0)>>4]) < registers[(op & 0x0f00)>>8])? 1 : 0;
+			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] + registers[(op & 0x0f00)>>8]; // TEST
 		}},
 		{0x8005, [this](uint16_t& op){ // 8xy5 - SUB Vx, Vy
-			registers[0xf] = (registers[(op & 0x0f00)>>8] > registers[(op & 0x00f0)>>4]) ? 1 : 0;
+			// Verified from mattmik
+			registers[0xf] = (registers[(op & 0x0f00)>>8] >= registers[(op & 0x00f0)>>4]) ? 1 : 0;
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x0f00)>>8] - registers[(op & 0x00f0)>>4];
 		}},
-		{0x8006, [this](uint16_t& op){ // 8xy6 - SHR Vx {, Vy}
-			registers[0xf] = (registers[(op & 0x0f00)>>8] & 0x1);
-			registers[(op & 0x0f00)>>8] >>= 1;
+		{0x8006, [this](uint16_t& op){ // 8xy6 - SHR Vx Vy (From mattmik)
+			registers[0xf] = registers[(op & 0x0f0)>>4] & 0x1;
+			registers[(op & 0x0f00)>>8] = registers[(op & 0x0f0)>>4] >> 1;
 		}},
 		{0x8007, [this](uint16_t& op){ // 8xy7 - SUBN Vx, Vy
-			registers[0xf] = (registers[(op & 0x0f00)>>8] < registers[(op & 0x00f0)>>4]) ? 1 : 0;
+			// Verified from mattmik
+			registers[0xf] = (registers[(op & 0x0f00)>>8] <= registers[(op & 0x00f0)>>4]) ? 1 : 0;
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] - registers[(op & 0x0f00)>>8];
 		}},
-		{0x800e, [this](uint16_t& op){ registers[0xf] = (registers[(op & 0x0f00)>>8] & 0x80) >> 7; registers[(op & 0x0f00)>>8] <<= 1; }}, // 8xyE - SHL Vx {, Vy}
+		{0x800e, [this](uint16_t& op){ // 8xyE - SHL Vx Vy (From mattmik)
+			registers[0xf] = (registers[(op & 0x0f0)>>4] >> 7) & 0x01;
+			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] << 1;
+		}},
 		{0x9000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] != registers[(op & 0x00f0)>>4])? 2: 0); }}, // 9xy0 - SNE Vx, Vy
 		{0x8000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4]; }}, // 8xy0 - LD Vx, Vy
 	};
@@ -98,8 +105,8 @@ void Machine::execute(uint16_t& opcode){
 		{0x4000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] != (op & 0x00ff))? 2: 0); }}, // 4xkk - SNE Vx, byte
 		{0x6000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff); }}, // 6xkk - LD Vx, byte
 		{0x7000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] += (op & 0x00ff); }}, // 7xkk - ADD Vx, byte
-		{0xa000, [this](uint16_t& op){ I = (op & 0x0fff); }}, // Annn - LD I, addr
-		{0xb000, [this](uint16_t& op){ PC = (uint16_t)registers[0] + (op & 0x0fff); }}, // Bnnn - JP V0, addr
+		{0xa000, [this](uint16_t& op){ I = (op & ((uint16_t)0x0fff)); }}, // Annn - LD I, addr
+		{0xb000, [this](uint16_t& op){ PC = ((uint16_t)registers[0]) + ((uint16_t)(op & 0x0fff)); }}, // Bnnn - JP V0, addr
 		{0xc000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = (op & 0x00ff) & random_byte(); }}, // Cxkk - RND Vx, byte
 		{0xd000, [this](uint16_t& op){ // TODO - Dxyn - DRW Vx, Vy, nibble
 			registers[0xf] = ge.draw_sprite(memory.begin() + I, memory.begin() + I + (op & 0x000f), registers[(op & 0x0f00)>>8] % 0x40, registers[(op & 0x00f0)>>4] % 0x20);
@@ -142,10 +149,12 @@ void Machine::print_machine_state(){
 	for(int i = 0; i < 16; ++i){
 		std::cout << "V" << std::hex << i << " " ; std::cout << (int)registers[i] << "  ";
 	}
-	std::cout << "\nStack: ";
+
+	// Uncomment to display Stack
+	/* std::cout << "\nStack: ";
 	for(int i = 0; i < 64; ++i){
 		std::cout << (int)stack[i] << " ";
-	}
+	} */
 
 	// Uncomment to display the entire memory
 	/* 
@@ -163,6 +172,7 @@ void Machine::runLoop(){
 		if(ge.is_dirty()){ // Check if the screen has to be updated
 			ge.update_display();
 			print_machine_state();
+			std::cout << "Opcode " << ((uint16_t) (memory[PC]<<8) | (memory[PC+1])) << "\n";
 		}
 
 		// Update the keyboard buffer to check for all pressed keys
@@ -175,7 +185,7 @@ void Machine::runLoop(){
 
 		// Update timers
 		update_timers(std::chrono::steady_clock::now());
-		
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
