@@ -87,6 +87,9 @@ ROMs were taken from [https://github.com/dmatlack/chip8](https://github.com/dmat
 
 Many ROMs were gotten from [Revival Studios](http://www.revival-studios.com/other.php)
 
+## Note on implementation of instructions
+A very interesting bug came up during the testing of the emulator. While playing the ROMs mentioned in [issue #28](https://github.com/LakshyAAAgrawal/chip8emu/issues/28), the games were mostly working except for a few instructions not behaving as expected. Stepping through the Octo debugger revealed a behaviour not explicitly documented in most Chip-8 specifications. The Instructions 8xy4, 8xy5, 8xy6, 8xy7, 8xye modify the Vf register using it as a flag. The earlier implementation of chip8emu was updating the flag register before executig the instruction, however, the Vf flag must be set after the exeuction of the instruction. This is to ensure handling of cases where Vf is itself being operated upon.
+
 ## Specification and References
 Mainly:
 1. [http://devernay.free.fr/hacks/chip8/C8TECH10.HTM](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
