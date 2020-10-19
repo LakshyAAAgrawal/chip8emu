@@ -72,27 +72,39 @@ void Machine::execute(uint16_t& opcode){
 		{0x8002, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] & registers[(op & 0x0f00)>>8]; }}, // 8xy2 - AND Vx, Vy
 		{0x8003, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] ^ registers[(op & 0x0f00)>>8]; }}, // 8xy3 - XOR Vx, Vy
 		{0x8004, [this](uint16_t& op){ // 8xy4 - ADD Vx, Vy
-			// Verified from mattmik
-			registers[0xf] = ((0xff - registers[(op & 0x00f0)>>4]) < registers[(op & 0x0f00)>>8])? 1 : 0;
+			// Update Vf after performing the operation
+			// As verified from Octo (http://johnearnest.github.io/Octo/index.html)
+			uint8_t orig_val = registers[(op & 0x0f00)>>8];
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] + registers[(op & 0x0f00)>>8]; // TEST
+			registers[0xf] = (registers[(op & 0x0f00)>>8] < orig_val)? 1 : 0;
 		}},
 		{0x8005, [this](uint16_t& op){ // 8xy5 - SUB Vx, Vy
-			// Verified from mattmik
-			registers[0xf] = (registers[(op & 0x0f00)>>8] >= registers[(op & 0x00f0)>>4]) ? 1 : 0;
+			// Vf to be set after calculation
+			// As verified from Octo (http://johnearnest.github.io/Octo/index.html)
+			uint8_t orig_val = registers[(op & 0x0f00)>>8];
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x0f00)>>8] - registers[(op & 0x00f0)>>4];
+			registers[0xf] = (registers[(op & 0x0f00)>>8] > orig_val) ? 0 : 1;
 		}},
 		{0x8006, [this](uint16_t& op){ // 8xy6 - SHR Vx Vy (From mattmik)
-			registers[0xf] = registers[(op & 0x0f0)>>4] & 0x1;
+			// Set Vf after performing the operation
+			// As verified from Octo (http://johnearnest.github.io/Octo/index.html)
+			uint8_t new_vf = registers[(op & 0x0f0)>>4] & 0x1;
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x0f0)>>4] >> 1;
+			registers[0xf] = new_vf;
 		}},
 		{0x8007, [this](uint16_t& op){ // 8xy7 - SUBN Vx, Vy
-			// Verified from mattmik
-			registers[0xf] = (registers[(op & 0x0f00)>>8] <= registers[(op & 0x00f0)>>4]) ? 1 : 0;
+			// The register Vf must be set AFTER performing the operation(per Octo http://johnearnest.github.io/Octo/index.html)
+			// Ensure that values wrap around the minimum and max to other side
+			uint8_t orig_val = registers[(op & 0x00f0)>>4];
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] - registers[(op & 0x0f00)>>8];
+			registers[0xf] = ((registers[(op & 0x0f00)>>8] > orig_val)? 0 : 1);
 		}},
 		{0x800e, [this](uint16_t& op){ // 8xyE - SHL Vx Vy (From mattmik)
-			registers[0xf] = (registers[(op & 0x0f0)>>4] >> 7) & 0x01;
+			// Set Vf after performing the operation
+			// As verified from Octo (http://johnearnest.github.io/Octo/index.html)
+			uint8_t new_vf = (registers[(op & 0x0f0)>>4] >> 7) & 0x01;
 			registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4] << 1;
+			registers[0xf] = new_vf;
 		}},
 		{0x9000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] != registers[(op & 0x00f0)>>4])? 2: 0); }}, // 9xy0 - SNE Vx, Vy
 		{0x8000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4]; }}, // 8xy0 - LD Vx, Vy
