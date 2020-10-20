@@ -3,7 +3,7 @@
 *Emulator displaying the CHIP-8 logo, drawing Sierpinski Triangle and Playing Tetris*
 
 # Chip-8 Emulator
-This is a terminal based Chip-8 Emulator written in C++. ```chip8emu``` can be used to run any CHIP-8 program written for the original specification.
+This is a terminal based Chip-8 Emulator written in C++. ```chip8emu``` can be used to run any CHIP-8 program written for the original specification. Discussed on reddit in [r/programming](https://redd.it/jcdatt) and [r/emulation](https://redd.it/jbpr5p).
 
 ## What is CHIP-8
 CHIP-8 is an interpreted programming language from the mid 1970s. A number of classic video games have been ported to CHIP-8 including Tetris, Space Invaders, Pong(Included in the [roms](/roms) directory). An active enthusiast community exists even today and participate anually in the [Octojam](https://itch.io/jam/octojam-7) to write programs for the CHIP-8 platform. CHIP 8 programs run on a CHIP 8 virtual machine(Similar to how Java Bytecode runs on a JVM, but in a much much more simplified manner). It was made to ease game development and programming of COSMAC VIP and Telmac 1800 microcomputers. Wikipedia has a very nicely written article on [CHIP 8](https://en.wikipedia.org/wiki/CHIP-8) for further detail.
