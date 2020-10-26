@@ -66,7 +66,7 @@ The following assumptions are made:
 You are welcome to submit bug reports as issues and to create pull requests to solve any existing issue.
 
 ## Customization
-Currently, only one customization is allowed. The Chip-8 systems provides programs with an in-system font set consisting of Hex-digits(0-F). The sprites for the same are loaded from [res/sprites.bin](/res/sprites.bin). The user could provide a custom sprite map and load into the emulator by simply changing the file content.
+Currently, only one customization is allowed. The Chip-8 systems provides programs with an in-system font set consisting of Hex-digits(0-F). The sprites for the same are loaded from [res/sprites.bin](/res/sprites.bin). The user could provide a custom sprite map and load into the emulator by simply changing the file content. Any binary editor could be used to generate the sprites file.
 
 ## Confirmed Working ROMs
 These are the ROMs I have already tested and verified working on ```chip8emu```. Many others should be supported as well. Also checkout [Octojam](https://itch.io/jam/octojam-7) for more recent ROMs.
