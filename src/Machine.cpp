@@ -110,7 +110,7 @@ void Machine::execute(uint16_t& opcode){
 		{0x8000, [this](uint16_t& op){ registers[(op & 0x0f00)>>8] = registers[(op & 0x00f0)>>4]; }}, // 8xy0 - LD Vx, Vy
 	};
 	std::map<uint16_t, std::function<void(uint16_t&)>> first_match{
-		{0x0000, [this](uint16_t& op){}}, // To be ignored as per COWGOD
+		{0x0000, [](uint16_t& op){}}, // To be ignored as per COWGOD
 		{0x1000, [this](uint16_t& op){ PC = (op & 0x0fff); }}, // JP addr
 		{0x2000, [this](uint16_t& op){ stack[SP++] = PC; PC = (op & 0x0fff); }}, // CALL addr
 		{0x3000, [this](uint16_t& op){ PC += ((registers[(op & 0x0f00)>>8] == (op & 0x00ff))? 2: 0); }}, // 3xkk - SE Vx, byte
