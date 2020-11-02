@@ -12,6 +12,14 @@ CFLAGS := -g -Wall -Werror -std=c++11
 LIB := # -lncurses -pthread -lmongoclient -L lib -lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt
 INC := -I include
 
+LLVMBUILDDIR := llvm/build
+LLVMTARGETDIR := llvm/linked
+LLVMTARGET := llvm/linked/c8emu.ll
+LLVMINTERMEDIATE := $(patsubst $(SRCDIR)/%,$(LLVMBUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.ll))
+LLVMCC := clang
+LLVMLINKER := llvm-link
+LLVMCFLAGS := $(CFLAGS) -fpic -fpie -fPIE -fPIC
+
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(TARGETDIR)
 	@echo " Linking..."
@@ -21,9 +29,18 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDDIR)
 	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
+llvm: $(LLVMINTERMEDIATE)
+	@mkdir -p $(LLVMTARGETDIR)
+	@echo " Linking..."
+	@echo " $(LLVMLINKER) -S -v -o $(LLVMTARGET) $(LIB) $^"; $(LLVMLINKER) -S -v -o $(LLVMTARGET) $(LIB) $^
+
+$(LLVMBUILDDIR)/%.ll: $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(LLVMBUILDDIR)
+	@echo " $(LLVMCC) $(LLVMCFLAGS) $(INC) -S -emit-llvm -o $@ $<"; $(LLVMCC) $(LLVMCFLAGS) $(INC) -S -emit-llvm -o $@ $<
+
 clean:
 	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET) $(LLVMBUILDDIR) $(LLVMTARGET)"; $(RM) -r $(BUILDDIR) $(TARGET) $(LLVMBUILDDIR) $(LLVMTARGET)
 
 # Tests
 tester:
