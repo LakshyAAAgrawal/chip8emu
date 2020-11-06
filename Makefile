@@ -15,10 +15,15 @@ INC := -I include
 LLVMBUILDDIR := llvm/build
 LLVMTARGETDIR := llvm/linked
 LLVMTARGET := llvm/linked/c8emu.ll
-LLVMINTERMEDIATE := $(patsubst $(SRCDIR)/%,$(LLVMBUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.ll))
-LLVMCC := clang
-LLVMLINKER := llvm-link
-LLVMCFLAGS := $(CFLAGS) -fpic -fpie -fPIE -fPIC
+LLVMBCTARGET := llvm/linked/c8emu.bc
+LLVMBINTARGET := llvm/linked/c8emu
+LLVMINTERMEDIATE := $(patsubst $(SRCDIR)/%,$(LLVMBUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+LLVMCC := wllvm++
+LLVMLINKER := wllvm++
+LLVMCFLAGS := $(CFLAGS)
+WLLVMEXTRACTBC := extract-bc
+LLVMDECOMP := llvm-dis
+export LLVM_COMPILER=clang
 
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(TARGETDIR)
@@ -29,18 +34,22 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDDIR)
 	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
-llvm: $(LLVMINTERMEDIATE)
+llvm: $(LLVMTARGET)
+
+$(LLVMTARGET): $(LLVMINTERMEDIATE)
 	@mkdir -p $(LLVMTARGETDIR)
 	@echo " Linking..."
-	@echo " $(LLVMLINKER) -S -v -o $(LLVMTARGET) $(LIB) $^"; $(LLVMLINKER) -S -v -o $(LLVMTARGET) $(LIB) $^
+	@echo " $(LLVMLINKER) -o $(LLVMBINTARGET) $(LIB) $^"; $(LLVMLINKER) -o $(LLVMBINTARGET) $(LIB) $^
+	@echo " $(WLLVMEXTRACTBC) $(LLVMBINTARGET)"; $(WLLVMEXTRACTBC) $(LLVMBINTARGET)
+	@echo " $(LLVMDECOMP) $(LLVMBCTARGET) -o $(LLVMTARGET)"; $(LLVMDECOMP) $(LLVMBCTARGET) -o $(LLVMTARGET)
 
-$(LLVMBUILDDIR)/%.ll: $(SRCDIR)/%.$(SRCEXT)
+$(LLVMBUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(LLVMBUILDDIR)
-	@echo " $(LLVMCC) $(LLVMCFLAGS) $(INC) -S -emit-llvm -o $@ $<"; $(LLVMCC) $(LLVMCFLAGS) $(INC) -S -emit-llvm -o $@ $<
+	@echo " $(LLVMCC) $(LLVMCFLAGS) $(INC) -c -o $@ $<"; $(LLVMCC) $(LLVMCFLAGS) $(INC) -c -o $@ $<
 
 clean:
 	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET) $(LLVMBUILDDIR) $(LLVMTARGET)"; $(RM) -r $(BUILDDIR) $(TARGET) $(LLVMBUILDDIR) $(LLVMTARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET) $(LLVMBUILDDIR) $(LLVMTARGETDIR)"; $(RM) -r $(BUILDDIR) $(TARGET) $(LLVMBUILDDIR) $(LLVMTARGETDIR)
 
 # Tests
 tester:
